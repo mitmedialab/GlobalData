@@ -4,6 +4,10 @@ import pandas as pd
 code_file = 'external/country_codes.csv'
 code_df = pd.DataFrame.from_csv(code_file)
 
+# Headers: alpha3,alpha2,label
+name_code_file = 'external/name_to_code.csv'
+name_code_df = pd.DataFrame.from_csv(name_code_file, index_col=None)
+
 # Sources: http://data.worldbank.org/indicator/SP.POP.TOTL
 #          http://ebas1.ebas.gov.tw/phc2010/english/51/301.pdf
 # Year: 2010
@@ -34,3 +38,18 @@ inet_df = pd.DataFrame.from_csv(inet_file)
 # Headers: alpha3,label,overall,depth,breadth
 dhl_file = 'external/dhl_gci_2011.csv'
 dhl_df = pd.DataFrame.from_csv(dhl_file)
+
+# Source: http://tpis7.ita.doc.gov/TPIS_GREPORTS/tpis_ustopcmds1.aspx
+# Year: various
+# Headers: COUNTRY,FLOW,2010,2012,2013,2014,RANK 2014,SHARE 2014, CHANGE 2010-2014, CHANGE 2013-2014
+ita_file = 'external/ita_trade.csv'
+ita_df = pd.DataFrame.from_csv(ita_file, index_col=None)
+ita_df = pd.merge(
+    name_code_df
+    , ita_df
+    , how='inner'
+    , left_on='label'
+    , right_on='COUNTRY'
+)
+ita_import = ita_df[ita_df.FLOW == 'IMPORTS']
+ita_export = ita_df[ita_df.FLOW == 'EXPORTS']
