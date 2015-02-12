@@ -51,5 +51,29 @@ ita_df = pd.merge(
     , left_on='label'
     , right_on='COUNTRY'
 )
-ita_import = ita_df[ita_df.FLOW == 'IMPORTS']
-ita_export = ita_df[ita_df.FLOW == 'EXPORTS']
+ita_import_df = ita_df[ita_df.FLOW == 'IMPORTS'].loc[:,['alpha3','2014']]
+ita_import_df.columns = ['alpha3', 'import']
+ita_export_df = ita_df[ita_df.FLOW == 'EXPORTS'].loc[:,['alpha3','2014']]
+ita_export_df.columns = ['alpha3', 'export']
+
+# Source: http://www.heritage.org/research/reports/2006/05/global-us-troop-deployment-1950-2005
+# Year: 2005
+# Headers: Region,Country,1950,...,2005,...
+troop_file = 'external/troopMarch2005.csv'
+troop_df = pd.DataFrame.from_csv(troop_file, index_col=None)
+troop_df = pd.merge(
+    name_code_df
+    , troop_df
+    , how='inner'
+    , left_on='label'
+    , right_on='Country'
+)
+
+# Source: http://www.cepii.fr/cepii/en/bdd_modele/download.asp?id=6
+# Year: 2015
+# Headers: iso_o, iso_d,...,distcap,...
+cepii_file = 'external/dist_cepii.csv'
+cepii_df = pd.DataFrame.from_csv(cepii_file, index_col=None)
+cepii_df['iso_o'] = cepii_df['iso_o'].str.lower()
+cepii_df['iso_d'] = cepii_df['iso_d'].str.lower()
+
